@@ -30,8 +30,6 @@ class CategoryApiView(APIView):
         """
         if category_id is not None:
             category = self.service.get_category(category_id)
-            if not category:
-                return Response(status=status.HTTP_404_NOT_FOUND)
 
             serializer = self.serializer_class(category)
             return Response(
@@ -76,8 +74,6 @@ class CategoryApiView(APIView):
             category_id,
             serializer.validated_data
         )
-        if not updated_category:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         response_serializer = self.serializer_class(updated_category)
         return Response(
@@ -93,9 +89,7 @@ class CategoryApiView(APIView):
         :param category_id: Идентификатор категории.
         :return: Response со статусом 204 или 404.
         """
-        category = self.service.get_category(category_id)
-        if not category:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        self.service.get_category(category_id)
 
         self.service.delete_category(category_id)
         return Response(status=status.HTTP_204_NO_CONTENT)

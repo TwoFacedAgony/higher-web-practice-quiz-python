@@ -19,9 +19,6 @@ class CategoryAdmin(admin.ModelAdmin):
     )
     empty_value_display = '-empty-'
 
-    def __str__(self):
-        return self.title[:MAX_STR_RETURN_LENGTH]
-
 
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):

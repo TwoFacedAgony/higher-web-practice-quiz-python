@@ -1,7 +1,9 @@
 """Модуль с реализацией сервиса категорий"""
+from rest_framework.generics import get_object_or_404
 
 from quiz.dao import AbstractCategoryService
 from quiz.models import Category
+from quiz.utils import update_object
 
 
 class CategoryService(AbstractCategoryService):
@@ -22,10 +24,7 @@ class CategoryService(AbstractCategoryService):
         :param category_id: Идентификатор категории.
         :return: Объект Category или None, если категория не найдена.
         """
-        try:
-            return Category.objects.get(pk=category_id)
-        except Category.DoesNotExist:
-            return None
+        return get_object_or_404(Category, pk=category_id)
 
     def create_category(self, title: str) -> Category:
         """
@@ -34,9 +33,10 @@ class CategoryService(AbstractCategoryService):
         :param title: Название категории.
         :return: Созданный объект Category.
         """
-        return Category.objects.create(title=title)
+        category, _ = Category.objects.get_or_create(title=title)
+        return category
 
-    def update_category(self, category_id: int, data: dict) -> Category | None:
+    def update_category(self, category_id: int, data: dict) -> Category:
         """
         Обновляет существующую категорию.
 
@@ -44,14 +44,7 @@ class CategoryService(AbstractCategoryService):
         :param data: Словарь с полями для обновления.
         :return: Обновлённый объект Category или None, если категории нет.
         """
-        try:
-            category = Category.objects.get(pk=category_id)
-        except Category.DoesNotExist:
-            return None
-        for key, value in data.items():
-            setattr(category, key, value)
-        category.save()
-        return category
+        return update_object(Category, category_id, data)
 
     def delete_category(self, category_id: int) -> None:
         """

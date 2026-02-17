@@ -1,6 +1,7 @@
 """Тесты для API представлений приложения quiz."""
 
 import json
+from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
@@ -23,7 +24,7 @@ class TestCategoryAPI:
         """Тестирует создание категории через POST-запрос."""
         url = reverse('category_list')
         response = api_client.post(url, {'title': 'History'}, format='json')
-        assert response.status_code == 201
+        assert response.status_code == HTTPStatus.CREATED
         assert response.json()['title'] == 'History'
 
     def test_list_categories(self, api_client) -> None:
@@ -32,7 +33,7 @@ class TestCategoryAPI:
         Category.objects.create(title='B')
         url = reverse('category_list')
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         data = response.json()
         assert len(data) == 2
         titles = [c['title'] for c in data]
@@ -43,7 +44,7 @@ class TestCategoryAPI:
         category = Category.objects.create(title='Science')
         url = reverse('category_detail', kwargs={'category_id': category.id})
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['title'] == 'Science'
 
     def test_get_category_404(self, api_client) -> None:
@@ -52,14 +53,14 @@ class TestCategoryAPI:
         """
         url = reverse('category_detail', kwargs={'category_id': 99999})
         response = api_client.get(url)
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_update_category(self, api_client) -> None:
         """Тестирует обновление категории через PUT-запрос."""
         category = Category.objects.create(title='Old')
         url = reverse('category_detail', kwargs={'category_id': category.id})
         response = api_client.put(url, {'title': 'New'}, format='json')
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['title'] == 'New'
 
     def test_update_category_404(self, api_client) -> None:
@@ -68,14 +69,14 @@ class TestCategoryAPI:
         """
         url = reverse('category_detail', kwargs={'category_id': 99999})
         response = api_client.put(url, {'title': 'New'}, format='json')
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_delete_category(self, api_client) -> None:
         """Тестирует удаление категории через DELETE-запрос."""
         category = Category.objects.create(title='To Delete')
         url = reverse('category_detail', kwargs={'category_id': category.id})
         response = api_client.delete(url)
-        assert response.status_code == 204
+        assert response.status_code == HTTPStatus.NO_CONTENT
         assert not Category.objects.filter(pk=category.id).exists()
 
     def test_delete_category_404(self, api_client) -> None:
@@ -84,7 +85,7 @@ class TestCategoryAPI:
         """
         url = reverse('category_detail', kwargs={'category_id': 99999})
         response = api_client.delete(url)
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
 
 @pytest.mark.django_db
@@ -99,7 +100,7 @@ class TestQuizAPI:
             {'title': 'Math Quiz', 'description': 'About numbers'},
             format='json',
         )
-        assert response.status_code == 201
+        assert response.status_code == HTTPStatus.CREATED
         data = response.json()
         assert data['title'] == 'Math Quiz'
         assert data['description'] == 'About numbers'
@@ -110,7 +111,7 @@ class TestQuizAPI:
         Quiz.objects.create(title='Quiz B')
         url = reverse('quiz_list')
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) == 2
 
     def test_get_quiz_by_id(self, api_client) -> None:
@@ -118,14 +119,14 @@ class TestQuizAPI:
         quiz = Quiz.objects.create(title='My Quiz', description='Desc')
         url = reverse('quiz_detail', kwargs={'quiz_id': quiz.id})
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['title'] == 'My Quiz'
 
     def test_get_quiz_404(self, api_client) -> None:
         """Тестирует, что GET-запрос к несуществующему квизу возвращает 404."""
         url = reverse('quiz_detail', kwargs={'quiz_id': 99999})
         response = api_client.get(url)
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_update_quiz(self, api_client) -> None:
         """Тестирует обновление квиза через PUT-запрос."""
@@ -136,7 +137,7 @@ class TestQuizAPI:
             {'title': 'New', 'description': 'New desc'},
             format='json',
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['title'] == 'New'
 
     def test_delete_quiz(self, api_client) -> None:
@@ -144,7 +145,7 @@ class TestQuizAPI:
         quiz = Quiz.objects.create(title='To Delete')
         url = reverse('quiz_detail', kwargs={'quiz_id': quiz.id})
         response = api_client.delete(url)
-        assert response.status_code == 204
+        assert response.status_code == HTTPStatus.NO_CONTENT
         assert not Quiz.objects.filter(pk=quiz.id).exists()
 
     def test_get_quiz_by_title(self, api_client) -> None:
@@ -153,7 +154,7 @@ class TestQuizAPI:
         Quiz.objects.create(title='Python Advanced')
         url = reverse('quiz_by_title', kwargs={'title': 'Python'})
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         data = response.json()
         assert len(data) == 2
         titles = [q['title'] for q in data]
@@ -171,7 +172,7 @@ class TestQuizAPI:
         )
         url = reverse('quiz_question', kwargs={'quiz_id': quiz.id})
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['text'] == 'Q1'
 
     def test_random_question_404_when_no_questions(self, api_client) -> None:
@@ -182,7 +183,7 @@ class TestQuizAPI:
         quiz = Quiz.objects.create(title='Empty')
         url = reverse('quiz_question', kwargs={'quiz_id': quiz.id})
         response = api_client.get(url)
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
 
 def _question_payload(quiz_id: int, **overrides) -> dict:
@@ -220,7 +221,7 @@ class TestQuestionAPI:
         )
         url = reverse('question_list')
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) >= 1
 
     def test_get_question_by_id(self, api_client) -> None:
@@ -235,7 +236,7 @@ class TestQuestionAPI:
         )
         url = reverse('question_detail', kwargs={'question_id': q.id})
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['text'] == 'Unique question text'
 
     def test_get_question_404(self, api_client) -> None:
@@ -244,7 +245,7 @@ class TestQuestionAPI:
         """
         url = reverse('question_detail', kwargs={'question_id': 99999})
         response = api_client.get(url)
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_get_questions_by_text(self, api_client) -> None:
         """Тестирует поиск вопросов по части текста через GET-запрос."""
@@ -258,7 +259,7 @@ class TestQuestionAPI:
         )
         url = reverse('question_by_text', kwargs={'query': 'Searchable'})
         response = api_client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         data = response.json()
         assert len(data) >= 1
         assert any('Searchable' in q['text'] for q in data)
@@ -275,7 +276,7 @@ class TestQuestionAPI:
         )
         url = reverse('question_answer', kwargs={'question_id': q.id})
         response = api_client.post(url, {'answer': 'B'}, format='json')
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['correct'] is True
 
     def test_check_answer_incorrect(self, api_client) -> None:
@@ -290,14 +291,14 @@ class TestQuestionAPI:
         )
         url = reverse('question_answer', kwargs={'question_id': q.id})
         response = api_client.post(url, {'answer': 'A'}, format='json')
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['correct'] is False
 
     def test_check_answer_404(self, api_client) -> None:
         """Тестирует, что для несуществующего вопроса возвращается 404."""
         url = reverse('question_answer', kwargs={'question_id': 99999})
         response = api_client.post(url, {'answer': 'X'}, format='json')
-        assert response.status_code == 404
+        assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_update_question(self, api_client) -> None:
         """Тестирует обновление вопроса через PUT-запрос."""
@@ -311,7 +312,7 @@ class TestQuestionAPI:
         )
         url = reverse('question_detail', kwargs={'question_id': q.id})
         response = api_client.put(url, {'text': 'Updated'}, format='json')
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert response.json()['text'] == 'Updated'
 
     def test_delete_question(self, api_client) -> None:
@@ -326,5 +327,5 @@ class TestQuestionAPI:
         )
         url = reverse('question_detail', kwargs={'question_id': q.id})
         response = api_client.delete(url)
-        assert response.status_code == 204
+        assert response.status_code == HTTPStatus.NO_CONTENT
         assert not Question.objects.filter(pk=q.id).exists()

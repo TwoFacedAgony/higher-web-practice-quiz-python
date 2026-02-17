@@ -2,10 +2,15 @@
 
 from django.db import models
 
-from quiz.constants import MAX_CATEGORY_TITLE_LENGTH, MAX_QUIZ_TITLE_LENGTH, \
-    MAX_QUIZ_DESCRIPTION_LENGTH, MAX_STR_RETURN_LENGTH, \
-    MAX_QUESTION_DESCRIPTION_LENGTH, MAX_QUESTION_TEXT_LENGTH, \
+from quiz.constants import (
+    MAX_CATEGORY_TITLE_LENGTH,
+    MAX_QUIZ_TITLE_LENGTH,
+    MAX_QUIZ_DESCRIPTION_LENGTH,
+    MAX_STR_RETURN_LENGTH,
+    MAX_QUESTION_DESCRIPTION_LENGTH,
+    MAX_QUESTION_TEXT_LENGTH,
     MAX_QUESTION_EXPLANATION_LENGTH
+)
 from quiz.validators import validate_answer_options
 
 
@@ -15,13 +20,11 @@ class Category(models.Model):
     title = models.CharField(
         max_length=MAX_CATEGORY_TITLE_LENGTH,
         unique=True,
-        null=False,
         blank=False,
         verbose_name='category title',
     )
 
     class Meta:
-        default_related_name = 'categories'
         verbose_name_plural = 'Categories'
         verbose_name = 'Category'
         ordering = (
@@ -49,7 +52,6 @@ class Quiz(models.Model):
     )
 
     class Meta:
-        default_related_name = 'quizzes'
         verbose_name_plural = 'Quizzes'
         verbose_name = 'Quiz'
         ordering = (

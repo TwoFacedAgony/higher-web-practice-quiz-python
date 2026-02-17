@@ -31,8 +31,6 @@ class QuizCRUDApiView(APIView):
         """
         if quiz_id is not None:
             quiz = self.service.get_quiz(quiz_id)
-            if not quiz:
-                return Response(status=status.HTTP_404_NOT_FOUND)
             serializer = self.serializer_class(quiz)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -72,8 +70,6 @@ class QuizCRUDApiView(APIView):
             quiz_id,
             serializer.validated_data
         )
-        if not updated_quiz:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         response_serializer = self.serializer_class(updated_quiz)
         return Response(response_serializer.data, status=status.HTTP_200_OK)

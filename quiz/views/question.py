@@ -30,8 +30,6 @@ class QuestionCRUDApiView(APIView):
         """
         if question_id is not None:
             question = self.service.get_question(question_id)
-            if not question:
-                return Response(status=status.HTTP_404_NOT_FOUND)
             serializer = self.serializer_class(question)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -75,8 +73,6 @@ class QuestionCRUDApiView(APIView):
             question_id,
             serializer.validated_data
         )
-        if not updated_question:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         response_serializer = self.serializer_class(updated_question)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
@@ -89,9 +85,6 @@ class QuestionCRUDApiView(APIView):
         :param question_id: Идентификатор вопроса.
         :return: Response со статусом 204 или 404.
         """
-        question = self.service.get_question(question_id)
-        if not question:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         self.service.delete_question(question_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -134,9 +127,6 @@ class QuestionAnswerApiView(APIView):
         :param question_id: Идентификатор вопроса.
         :return: Response с полем 'correct' (true/false) или 404.
         """
-        question = self.service.get_question(question_id)
-        if not question:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         answer = request.data.get('answer', '')
         correct = self.service.check_answer(question_id, answer)

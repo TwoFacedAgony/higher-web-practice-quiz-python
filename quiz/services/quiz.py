@@ -1,7 +1,8 @@
 """Модуль с реализацией сервиса квизов"""
-
+from django.shortcuts import get_object_or_404
 from quiz.dao import AbstractQuizService
 from quiz.models import Quiz
+from quiz.utils import update_object
 
 
 class QuizService(AbstractQuizService):
@@ -22,10 +23,7 @@ class QuizService(AbstractQuizService):
         :param quiz_id: Идентификатор квиза.
         :return: Объект Quiz или None, если квиз не найден.
         """
-        try:
-            return Quiz.objects.get(pk=quiz_id)
-        except Quiz.DoesNotExist:
-            return None
+        return get_object_or_404(Quiz, pk=quiz_id)
 
     def get_quizes_by_title(self, title: str) -> list[Quiz]:
         """
@@ -57,14 +55,7 @@ class QuizService(AbstractQuizService):
         :param data: Словарь с полями для обновления.
         :return: Обновлённый объект Quiz или None, если квиз не найден.
         """
-        try:
-            quiz = Quiz.objects.get(pk=quiz_id)
-        except Quiz.DoesNotExist:
-            return None
-        for key, value in data.items():
-            setattr(quiz, key, value)
-        quiz.save()
-        return quiz
+        return update_object(Quiz, quiz_id, data)
 
     def delete_quiz(self, quiz_id: int) -> None:
         """

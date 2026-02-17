@@ -1,9 +1,10 @@
 """Модуль с реализацией сервиса вопросов"""
 
 import random
-
+from django.shortcuts import get_object_or_404
 from quiz.dao import AbstractQuestionService
 from quiz.models import Question
+from quiz.utils import update_object
 
 
 class QuestionService(AbstractQuestionService):
@@ -24,10 +25,7 @@ class QuestionService(AbstractQuestionService):
         :param question_id: Идентификатор вопроса.
         :return: Объект Question или None, если вопрос не найден.
         """
-        try:
-            return Question.objects.get(pk=question_id)
-        except Question.DoesNotExist:
-            return None
+        return get_object_or_404(Question, pk=question_id)
 
     def get_questions_by_text(self, text: str) -> list[Question]:
         """
@@ -67,14 +65,7 @@ class QuestionService(AbstractQuestionService):
         :param data: Словарь с полями для обновления.
         :return: Обновлённый объект Question или None, если вопрос не найден.
         """
-        try:
-            question = Question.objects.get(pk=question_id)
-        except Question.DoesNotExist:
-            return None
-        for key, value in data.items():
-            setattr(question, key, value)
-        question.save()
-        return question
+        return update_object(Question, question_id, data)
 
     def delete_question(self, question_id: int) -> None:
         """
@@ -92,10 +83,7 @@ class QuestionService(AbstractQuestionService):
         :param answer: Ответ пользователя.
         :return: True, если ответ совпадает с правильным, иначе False.
         """
-        try:
-            question = Question.objects.get(pk=question_id)
-        except Question.DoesNotExist:
-            return False
+        question = get_object_or_404(Question, pk=question_id)
         return question.correct_answer.strip() == answer.strip()
 
     def random_question_from_quiz(self, quiz_id: int) -> Question:

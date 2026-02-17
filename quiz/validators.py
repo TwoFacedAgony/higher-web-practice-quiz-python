@@ -2,6 +2,8 @@
 
 from django.core.exceptions import ValidationError
 
+from quiz.constants import MIN_ANSWERS
+
 
 def validate_answer_options(options):
     """
@@ -15,7 +17,7 @@ def validate_answer_options(options):
     if not type(options) is (list, tuple):
         raise ValidationError('Answer options must be a list or a tuple')
 
-    if len(options) < 2:
+    if len(options) < MIN_ANSWERS:
         raise ValidationError(
             'Question must have at least two possible answers'
         )
