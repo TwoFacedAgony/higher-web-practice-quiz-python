@@ -2,8 +2,10 @@
 
 from django.db import models
 
-from quiz.constants import MAX_TITLE_LENGTH, MAX_STR_RETURN_LENGTH, \
-    MAX_TEXT_LENGTH
+from quiz.constants import MAX_CATEGORY_TITLE_LENGTH, MAX_QUIZ_TITLE_LENGTH, \
+    MAX_QUIZ_DESCRIPTION_LENGTH, MAX_STR_RETURN_LENGTH, \
+    MAX_QUESTION_DESCRIPTION_LENGTH, MAX_QUESTION_TEXT_LENGTH, \
+    MAX_QUESTION_EXPLANATION_LENGTH
 from quiz.validators import validate_answer_options
 
 
@@ -11,9 +13,10 @@ class Category(models.Model):
     """Модель категории вопросов."""
 
     title = models.CharField(
-        max_length=MAX_TITLE_LENGTH,
+        max_length=MAX_CATEGORY_TITLE_LENGTH,
         unique=True,
         null=False,
+        blank=False,
         verbose_name='category title',
     )
 
@@ -33,13 +36,13 @@ class Quiz(models.Model):
     """Модель квиза (теста/викторины)."""
 
     title = models.CharField(
-        max_length=MAX_TITLE_LENGTH,
+        max_length=MAX_QUIZ_TITLE_LENGTH,
         unique=True,
         null=False,
         verbose_name='quiz title',
     )
     description = models.TextField(
-        max_length=MAX_TEXT_LENGTH,
+        max_length=MAX_QUIZ_DESCRIPTION_LENGTH,
         null=True,
         blank=True,
         verbose_name='quiz description',
@@ -84,13 +87,13 @@ class Question(models.Model):
         verbose_name='quiz'
     )
     description = models.TextField(
-        max_length=MAX_TEXT_LENGTH,
+        max_length=MAX_QUESTION_DESCRIPTION_LENGTH,
         null=True,
         blank=True,
         verbose_name='description',
     )
     text = models.TextField(
-        max_length=MAX_TEXT_LENGTH,
+        max_length=MAX_QUESTION_TEXT_LENGTH,
         verbose_name='text',
     )
     options = models.TextField(
@@ -103,7 +106,7 @@ class Question(models.Model):
         verbose_name='correct answer',
     )
     explanation = models.TextField(
-        max_length=MAX_TEXT_LENGTH,
+        max_length=MAX_QUESTION_EXPLANATION_LENGTH,
         blank=True,
         null=True,
         verbose_name='answer explanation',
