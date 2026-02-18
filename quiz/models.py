@@ -20,7 +20,6 @@ class Category(models.Model):
     title = models.CharField(
         max_length=MAX_CATEGORY_TITLE_LENGTH,
         unique=True,
-        blank=False,
         verbose_name='category title',
     )
 

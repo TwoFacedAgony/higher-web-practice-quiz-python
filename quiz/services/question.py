@@ -53,7 +53,6 @@ class QuestionService(AbstractQuestionService):
         :param data: Словарь с полями вопроса (без поля quiz).
         :return: Созданный объект Question.
         """
-        data = dict(data)
         data['quiz_id'] = quiz_id
         return Question.objects.create(**data)
 
